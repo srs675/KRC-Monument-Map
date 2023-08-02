@@ -1,0 +1,1276 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/MarkerCluster.css">
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>KRC Map</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet.markercluster.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/FixedShapefile_1.js"></script>
+        <script src="data/KRCControlHybrid_2.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'feet',
+            secondaryLengthUnit: 'miles',
+            primaryAreaUnit: 'sqfeet',
+            secondaryAreaUnit: 'sqmiles'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+            map.setMaxBounds(map.getBounds());
+        }
+        map.createPane('pane_SatelliteOnly_0');
+        map.getPane('pane_SatelliteOnly_0').style.zIndex = 400;
+        var layer_SatelliteOnly_0 = L.tileLayer('http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}', {
+            pane: 'pane_SatelliteOnly_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_SatelliteOnly_0;
+        map.addLayer(layer_SatelliteOnly_0);
+        function pop_FixedShapefile_1(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Area</th>\
+                        <td>' + (feature.properties['Area'] !== null ? autolinker.link(feature.properties['Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Test</th>\
+                        <td>' + (feature.properties['Test'] !== null ? autolinker.link(feature.properties['Test'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LAS</th>\
+                        <td>' + (feature.properties['LAS'] !== null ? autolinker.link(feature.properties['LAS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Soil Type</th>\
+                        <td>' + (feature.properties['SoilType'] !== null ? autolinker.link(feature.properties['SoilType'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LAS Name</th>\
+                        <td>' + (feature.properties['LAS Name'] !== null ? autolinker.link(feature.properties['LAS Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+        function style_FixedShapefile_1_0(feature) {
+            var context = {
+                feature: feature,
+                variables: {}
+            };
+            // Start of if blocks and style check logic
+            if (exp_FixedShapefile_1rule0_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(23,253,249,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule1_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(201,245,4,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule2_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(139,68,2,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule3_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(177,229,175,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule4_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(39,168,16,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule5_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(11,75,9,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule6_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,170,215,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule7_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(173,154,137,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule8_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,120,180,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule9_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(227,26,28,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule10_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,0,0,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule11_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(19,104,127,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule12_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(30,165,189,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule13_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,98,91,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule14_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(177,227,242,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule15_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(125,139,143,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule16_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(240,204,26,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule17_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(232,135,208,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule18_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(240,148,20,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule19_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(149,16,226,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule20_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,15,54,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule21_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(60,37,77,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule22_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(67,141,237,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule23_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(68,234,204,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule24_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(145,228,29,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule25_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(245,201,70,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule26_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,113,72,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule27_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(13,190,40,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule28_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(235,75,11,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule29_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(60,172,213,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule30_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(134,28,44,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule31_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(161,151,173,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule32_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(20,86,140,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule33_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(125,139,143,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule34_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(39,222,204,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule35_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,191,111,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule36_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,251,255,1.0)',
+                interactive: true,
+            };
+                }
+                else if (exp_FixedShapefile_1rule37_eval_expression(context)) {
+                  return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(109,63,11,1.0)',
+                interactive: true,
+            };
+                }
+            else {
+                return {
+                pane: 'pane_FixedShapefile_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(241,15,222,1.0)',
+                interactive: true,
+            };
+            }
+        }
+        map.createPane('pane_FixedShapefile_1');
+        map.getPane('pane_FixedShapefile_1').style.zIndex = 401;
+        map.getPane('pane_FixedShapefile_1').style['mix-blend-mode'] = 'normal';
+        var layer_FixedShapefile_1 = new L.geoJson(json_FixedShapefile_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_FixedShapefile_1',
+            layerName: 'layer_FixedShapefile_1',
+            pane: 'pane_FixedShapefile_1',
+            onEachFeature: pop_FixedShapefile_1,
+            style: style_FixedShapefile_1_0,
+        });
+        bounds_group.addLayer(layer_FixedShapefile_1);
+        map.addLayer(layer_FixedShapefile_1);
+        function pop_KRCControlHybrid_2(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Location</th>\
+                        <td>' + (feature.properties['Location'] !== null ? autolinker.link(feature.properties['Location'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Point ID</th>\
+                        <td>' + (feature.properties['PT_ID'] !== null ? autolinker.link(feature.properties['PT_ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Northing (ft)</th>\
+                        <td>' + (feature.properties['N'] !== null ? autolinker.link(feature.properties['N'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Easting (ft)</th>\
+                        <td>' + (feature.properties['E'] !== null ? autolinker.link(feature.properties['E'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Height (ft)</th>\
+                        <td>' + (feature.properties['H'] !== null ? autolinker.link(feature.properties['H'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Source</th>\
+                        <td>' + (feature.properties['Source'] !== null ? autolinker.link(feature.properties['Source'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Target Note</th>\
+                        <td>' + (feature.properties['Target Not'] !== null ? autolinker.link(feature.properties['Target Not'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_KRCControlHybrid_2_0(feature) {
+            switch(String(feature.properties['Location'])) {
+                case 'Monument':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                shape: 'diamond',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(128,17,25,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(219,30,42,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'T3':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                shape: 'diamond',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(93,67,23,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(84,176,74,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Blizzard':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                shape: 'diamond',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(240,204,26,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Bendix':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                shape: 'diamond',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Bendix Pad':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                radius: 3.0,
+                opacity: 1,
+                color: 'rgba(31,120,180,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Bldg 105':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                radius: 3.0,
+                opacity: 1,
+                color: 'rgba(83,83,83,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(72,217,200,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Bldg 79':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                radius: 3.0,
+                opacity: 1,
+                color: 'rgba(83,83,83,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(40,198,77,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Bldg 80':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                radius: 3.0,
+                opacity: 1,
+                color: 'rgba(83,83,83,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(165,216,62,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'HUB':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                shape: 'diamond',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(200,48,182,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(145,74,176,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'RMS':
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                radius: 3.0,
+                opacity: 1,
+                color: 'rgba(50,87,128,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(72,123,182,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_KRCControlHybrid_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(25,80,210,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_KRCControlHybrid_2');
+        map.getPane('pane_KRCControlHybrid_2').style.zIndex = 402;
+        map.getPane('pane_KRCControlHybrid_2').style['mix-blend-mode'] = 'normal';
+        var layer_KRCControlHybrid_2 = new L.geoJson(json_KRCControlHybrid_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_KRCControlHybrid_2',
+            layerName: 'layer_KRCControlHybrid_2',
+            pane: 'pane_KRCControlHybrid_2',
+            onEachFeature: pop_KRCControlHybrid_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_KRCControlHybrid_2_0(feature));
+            },
+        });
+        var cluster_KRCControlHybrid_2 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_KRCControlHybrid_2.addLayer(layer_KRCControlHybrid_2);
+
+        bounds_group.addLayer(layer_KRCControlHybrid_2);
+        cluster_KRCControlHybrid_2.addTo(map);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>KRC Map</h2>';
+            };
+            title.addTo(map);
+            var abstract = new L.Control({'position':'bottomright'});
+            abstract.onAdd = function (map) {
+                this._div = L.DomUtil.create('div',
+                'leaflet-control abstract');
+                this._div.id = 'abstract'
+
+                    abstract.show();
+                    return this._div;
+                };
+                abstract.show = function () {
+                    this._div.classList.remove("abstract");
+                    this._div.classList.add("abstractUncollapsed");
+                    this._div.innerHTML = 'This map is designed to provide basic information about areas within the KRC testing faclities. Click on a feature to see information about that test/area.';
+            };
+            abstract.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'KRC Control Hybrid<br /><table><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_Monument0.png" /></td><td>Monument</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_T31.png" /></td><td>T3</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_Blizzard2.png" /></td><td>Blizzard</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_Bendix3.png" /></td><td>Bendix</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_BendixPad4.png" /></td><td>Bendix Pad</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_Bldg1055.png" /></td><td>Bldg 105</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_Bldg796.png" /></td><td>Bldg 79</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_Bldg807.png" /></td><td>Bldg 80</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_HUB8.png" /></td><td>HUB</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_RMS9.png" /></td><td>RMS</td></tr><tr><td style="text-align: center;"><img src="legend/KRCControlHybrid_2_10.png" /></td><td></td></tr></table>': cluster_KRCControlHybrid_2,'Fixed Shapefile<br /><table><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_NeverClassified0.png" /></td><td>Never Classified</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Unassigned1.png" /></td><td>Unassigned</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Ground2.png" /></td><td>Ground</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_LowVegetation3.png" /></td><td>Low Vegetation</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_MediumVegetation4.png" /></td><td>Medium Vegetation</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_HighVegetation5.png" /></td><td>High Vegetation</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Building6.png" /></td><td>Building</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_LowPoint7.png" /></td><td>Low Point</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Water8.png" /></td><td>Water</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Rail9.png" /></td><td>Rail</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_RoadSurface10.png" /></td><td>Road Surface</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_WireGuardShield11.png" /></td><td>Wire - Guard (Shield)</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_WireConductorPhase12.png" /></td><td>Wire - Conductor (Phase)</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_TransmissionTower13.png" /></td><td>Transmission Tower</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_WireStructureConnectorInsulator14.png" /></td><td>Wire - Structure Connector (Insulator)</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_BridgeDeck15.png" /></td><td>Bridge Deck</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_AccessRoad16.png" /></td><td>Access Road</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_AirportBuildings17.png" /></td><td>Airport Buildings</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_KRCBuildings18.png" /></td><td>KRC Buildings</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Concrete19.png" /></td><td>Concrete</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Ice20.png" /></td><td>Ice</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_22A21.png" /></td><td>22A</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_CrushedMineRock22.png" /></td><td>Crushed Mine Rock</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_FineGrainedSand23.png" /></td><td>Fine-Grained Sand</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_OrganicMaterial24.png" /></td><td>Organic Material</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Sand25.png" /></td><td>Sand</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_SandyLoam26.png" /></td><td>Sandy Loam</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Vegetation27.png" /></td><td>Vegetation</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_ConeShed28.png" /></td><td>Cone Shed</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_SemiTrailer29.png" /></td><td>Semi Trailer</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Brick30.png" /></td><td>Brick</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Rubber31.png" /></td><td>Rubber</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_SolarPanels32.png" /></td><td>Solar Panels</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Metal33.png" /></td><td>Metal</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_REATransformers34.png" /></td><td>REA Transformers</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_AirportAccessRoads35.png" /></td><td>Airport Access Roads</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Gate36.png" /></td><td>Gate</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_Wood37.png" /></td><td>Wood</td></tr><tr><td style="text-align: center;"><img src="legend/FixedShapefile_1_38.png" /></td><td></td></tr></table>': layer_FixedShapefile_1,"Satellite Only": layer_SatelliteOnly_0,}).addTo(map);
+        map.on("zoomend", function(){
+
+                if (map.hasLayer(layer_KRCControlHybrid_2)) {
+                    if (map.getZoom() <= 15 && map.getZoom() >= 19) {
+                        layer_KRCControlHybrid_2.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_KRCControlHybrid_2.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        });
+        setBounds();
+        var i = 0;
+        layer_KRCControlHybrid_2.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['PT_ID'] !== null?String('<div style="color: #000000; font-size: 8pt; font-family: \'Arial Rounded MT Bold\', sans-serif;">' + layer.feature.properties['PT_ID']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_KRCControlHybrid_2'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+                if (map.hasLayer(layer_KRCControlHybrid_2)) {
+                    if (map.getZoom() <= 15 && map.getZoom() >= 19) {
+                        layer_KRCControlHybrid_2.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_KRCControlHybrid_2.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        map.addControl(new L.Control.Search({
+            layer: cluster_FixedShapefile_1,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'Area'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Location": "str","LAS Name": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+        var i = 0;
+        layer_KRCControlHybrid_2.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['PT_ID'] !== null?String('<div style="color: #000000; font-size: 8pt; font-family: \'Arial Rounded MT Bold\', sans-serif;">' + layer.feature.properties['PT_ID']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_KRCControlHybrid_2'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Location = document.createElement('div');
+            div_Location.id = "div_Location";
+            div_Location.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Location);
+            sel_Location = document.createElement('select');
+            sel_Location.multiple = true;
+            sel_Location.size = 10;
+            sel_Location.id = "sel_Location";
+            var Location_options_str = "<option value='' unselected></option>";
+            sel_Location.onchange = function(){filterFunc()};
+            Location_options_str  += '<option value="Bendix">Bendix</option>';
+            Location_options_str  += '<option value="Bendix Pad">Bendix Pad</option>';
+            Location_options_str  += '<option value="Bldg 105">Bldg 105</option>';
+            Location_options_str  += '<option value="Bldg 79">Bldg 79</option>';
+            Location_options_str  += '<option value="Bldg 80">Bldg 80</option>';
+            Location_options_str  += '<option value="Blizzard">Blizzard</option>';
+            Location_options_str  += '<option value="HUB">HUB</option>';
+            Location_options_str  += '<option value="KRC Base">KRC Base</option>';
+            Location_options_str  += '<option value="Monument">Monument</option>';
+            Location_options_str  += '<option value="RMS">RMS</option>';
+            Location_options_str  += '<option value="T3">T3</option>';
+            sel_Location.innerHTML = Location_options_str;
+            div_Location.appendChild(sel_Location);
+            var lab_Location = document.createElement('div');
+            lab_Location.innerHTML = 'Location';
+            lab_Location.className = 'filterlabel';
+            div_Location.appendChild(lab_Location);
+            var reset_Location = document.createElement('div');
+            reset_Location.innerHTML = 'clear filter';
+            reset_Location.className = 'filterlabel';
+            reset_Location.onclick = function() {
+                var options = document.getElementById("sel_Location").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Location.appendChild(reset_Location);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_LASName = document.createElement('div');
+            div_LASName.id = "div_LASName";
+            div_LASName.className= "filterselect";
+            document.getElementById("menu").appendChild(div_LASName);
+            sel_LASName = document.createElement('select');
+            sel_LASName.multiple = true;
+            sel_LASName.size = 10;
+            sel_LASName.id = "sel_LASName";
+            var LASName_options_str = "<option value='' unselected></option>";
+            sel_LASName.onchange = function(){filterFunc()};
+            LASName_options_str  += '<option value="NULL">NULL</option>';
+            LASName_options_str  += '<option value="22A">22A</option>';
+            LASName_options_str  += '<option value="Access Roads">Access Roads</option>';
+            LASName_options_str  += '<option value="Airport Buildings">Airport Buildings</option>';
+            LASName_options_str  += '<option value="Brick">Brick</option>';
+            LASName_options_str  += '<option value="Building">Building</option>';
+            LASName_options_str  += '<option value="Buildings">Buildings</option>';
+            LASName_options_str  += '<option value="Concrete">Concrete</option>';
+            LASName_options_str  += '<option value="Cone Shed">Cone Shed</option>';
+            LASName_options_str  += '<option value="Crushed Mine Rock">Crushed Mine Rock</option>';
+            LASName_options_str  += '<option value="Fine-grained Sand">Fine-grained Sand</option>';
+            LASName_options_str  += '<option value="Gate">Gate</option>';
+            LASName_options_str  += '<option value="Ground">Ground</option>';
+            LASName_options_str  += '<option value="High Vegetation">High Vegetation</option>';
+            LASName_options_str  += '<option value="Ice">Ice</option>';
+            LASName_options_str  += '<option value="KRC Buildings">KRC Buildings</option>';
+            LASName_options_str  += '<option value="Low Vegetation">Low Vegetation</option>';
+            LASName_options_str  += '<option value="Medium Vegetation">Medium Vegetation</option>';
+            LASName_options_str  += '<option value="Metal">Metal</option>';
+            LASName_options_str  += '<option value="Organic Material">Organic Material</option>';
+            LASName_options_str  += '<option value="REA Transformers">REA Transformers</option>';
+            LASName_options_str  += '<option value="Road Surface">Road Surface</option>';
+            LASName_options_str  += '<option value="Rubber">Rubber</option>';
+            LASName_options_str  += '<option value="Sand">Sand</option>';
+            LASName_options_str  += '<option value="Sandy Loam">Sandy Loam</option>';
+            LASName_options_str  += '<option value="Semi Trailer">Semi Trailer</option>';
+            LASName_options_str  += '<option value="Solar Panels">Solar Panels</option>';
+            LASName_options_str  += '<option value="Water">Water</option>';
+            sel_LASName.innerHTML = LASName_options_str;
+            div_LASName.appendChild(sel_LASName);
+            var lab_LASName = document.createElement('div');
+            lab_LASName.innerHTML = 'LAS Name';
+            lab_LASName.className = 'filterlabel';
+            div_LASName.appendChild(lab_LASName);
+            var reset_LASName = document.createElement('div');
+            reset_LASName.innerHTML = 'clear filter';
+            reset_LASName.className = 'filterlabel';
+            reset_LASName.onclick = function() {
+                var options = document.getElementById("sel_LASName").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_LASName.appendChild(reset_LASName);
+        resetLabels([layer_KRCControlHybrid_2]);
+        map.on("zoomend", function(){
+            resetLabels([layer_KRCControlHybrid_2]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_KRCControlHybrid_2]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_KRCControlHybrid_2]);
+        });
+        </script>
+    </body>
+</html>
